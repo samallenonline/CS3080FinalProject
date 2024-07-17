@@ -1,0 +1,11 @@
+Create virtual environment:
+python3 -m venv fvenv
+
+Activate virtual environment:
+source ./fvenv/scripts/activate
+
+Install all requirements:
+pip install -r requirements.txt
+
+Exit virtual environment:
+deactivate
