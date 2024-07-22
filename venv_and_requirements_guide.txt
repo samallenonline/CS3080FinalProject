@@ -7,5 +7,8 @@ source ./fvenv/scripts/activate
 Install all requirements:
 pip install -r requirements.txt
 
+Update all requirements:
+pip freeze > requirements.txt
+
 Exit virtual environment:
 deactivate
