@@ -41,10 +41,23 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 
 # replace NA values with a -1 to ensure consistency with categorical variables
 #data[''] = data[''].replace('NA', '-1')
+# See: https://stackoverflow.com/questions/38117016/update-pandas-dataframe-with-str-replace-vs-replace
 
 '''
-# Ignore NAs in age_of_onset
-data['age_of_onset'] = data['age_of_onset'].replace('NA', '-1')
+> ignore NAs
+  age_of_onset -> can ignore NAs because they will probably throw off predictions
+
+> easier to start with
+  sex (1=MtF; 2 =FtM)
+  hormontherapy (1 =yes; 2 =no)
+  sex reassignement surgery (1= yes; 2 = no)
+
+> intermediate complexity
+  initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)
+
+> should probably ignore due to complexity
+  hormonetype
+  direction_change
 '''
 
 print("* NA and empty values have been successfully handled")
