@@ -40,7 +40,7 @@ X = data[['sex (1=MtF; 2 =FtM)',
 
 X = data[['sex (1=MtF; 2 =FtM)',
 'hormontherapy (1 =yes; 2 =no)',
-'sex reassignement surgery (1= yes; 2 = no)',]]
+'sex reassignement surgery (1= yes; 2 = no)']]
 
 # dependent variable
 y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
@@ -74,3 +74,11 @@ print("* NA and empty values have been successfully handled")
 # perform regression 
 # regr = linear_model.LinearRegression()
 # regr.fit(X,y)
+
+'''
+# Predict using args
+# 'sex (1=MtF; 2 =FtM)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
+# Result should be 1 or 2 or in that range
+predictIfChange = regr.predict([[2,2,2]]) # Arbitrary for now
+print(predictIfChange)
+'''
