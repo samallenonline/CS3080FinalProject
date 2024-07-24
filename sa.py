@@ -42,7 +42,7 @@ X = data[['sex (1=MtF; 2 =FtM)',
 '''
 
 X = data[['sex (1=MtF; 2 =FtM)',
-          'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = a0lloerotic)',
+          'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
           'hormontherapy (1 =yes; 2 =no)',
           'sex reassignement surgery (1= yes; 2 = no)']]
 
@@ -79,7 +79,7 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 # Not sure if this actually works; it didn't seem to work until I changed the code to
 # use the copied csv instead. The main problem AFAIK is the rows of empty commas at the end
 data['sex (1=MtF; 2 =FtM)'] = data['sex (1=MtF; 2 =FtM)'].replace('NA', '0')
-data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = a0lloerotic)'] = data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = a0lloerotic)'].replace('NA', '0')
+data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'] = data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'].replace('NA', '0')
 data['hormontherapy (1 =yes; 2 =no)'] = data['hormontherapy (1 =yes; 2 =no)'].replace('NA', '0')
 data['sex reassignement surgery (1= yes; 2 = no)'] = data['sex reassignement surgery (1= yes; 2 = no)'].replace('NA', '0')
 
@@ -93,7 +93,7 @@ regr = linear_model.LinearRegression()
 regr.fit(X,y)
 
 # LOE: Predict using args
-# 'sex (1=MtF; 2 =FtM)', 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = a0lloerotic)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
+# 'sex (1=MtF; 2 =FtM)', 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
 predictIfChange = regr.predict([[2,3,1,1]]) # Arbitrary for now
 print(predictIfChange)
