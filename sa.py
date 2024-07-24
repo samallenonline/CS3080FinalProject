@@ -39,9 +39,26 @@ X = data[['sex (1=MtF; 2 =FtM)',
 # dependent variable
 y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
 
-# replace NA values with a -1 to ensure consistency with categorical variables 
+# replace NA values with a -1 to ensure consistency with categorical variables
+#data[''] = data[''].replace('NA', '-1')
+data['age_of_onset'] = data['age_of_onset'].replace('NA', '-1')
+data['onset_before_age_of_12 (1= before or at age of 12; after age of 12)'] = data['onset_before_age_of_12 (1= before or at age of 12; after age of 12)'].replace('NA', '-1')
+data['age_psychol (age of first psychological counselling)'] = data['age_psychol (age of first psychological counselling)'].replace('NA', '-1')
+data['age_role (age of start everday-experience)'] = data['age_role (age of start everday-experience)'].replace('NA', '-1')
+data['age_hormonetherapy (age of initiation of hormonetherapy)'] = data['age_hormonetherapy (age of initiation of hormonetherapy)'].replace('NA', '-1')
+data['hormonetype (1= T transdermal; 2 = T intramuscular; 3 = E + Antiandrogen; 4 = Estradiol transdermal; 5 = Estradiol oral; 6 = estradiol +gestagen)'] = data['hormonetype (1= T transdermal; 2 = T intramuscular; 3 = E + Antiandrogen; 4 = Estradiol transdermal; 5 = Estradiol oral; 6 = estradiol +gestagen)'].replace('NA', '-1')
+data['age_surgery (age of sex reassignement surgery)'] = data['age_surgery (age of sex reassignement surgery)'].replace('NA', '-1')
+data['type_of_surgery (1 = hysterectomy + mastectomy; 2 = +penoid, 3 = neovagina, 4 = breast augmentation)'] = data['type_of_surgery (1 = hysterectomy + mastectomy; 2 = +penoid, 3 = neovagina, 4 = breast augmentation)'].replace('NA', '-1')
+data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace('NA', '-1')
 
-print("* NA values have been successfully handled")
+# Fill blank values with -1
+#data[''] = data[''].replace('', '-1')
+data['age_hormonetherapy (age of initiation of hormonetherapy)'] = data['age_hormonetherapy (age of initiation of hormonetherapy)'].replace('', '-1')
+data['hormonetype (1= T transdermal; 2 = T intramuscular; 3 = E + Antiandrogen; 4 = Estradiol transdermal; 5 = Estradiol oral; 6 = estradiol +gestagen)'] = data['hormonetype (1= T transdermal; 2 = T intramuscular; 3 = E + Antiandrogen; 4 = Estradiol transdermal; 5 = Estradiol oral; 6 = estradiol +gestagen)'].replace('', '-1')
+data['age_surgery (age of sex reassignement surgery)'] = data['age_surgery (age of sex reassignement surgery)'].replace('', '-1')
+data['type_of_surgery (1 = hysterectomy + mastectomy; 2 = +penoid, 3 = neovagina, 4 = breast augmentation)'] = data['type_of_surgery (1 = hysterectomy + mastectomy; 2 = +penoid, 3 = neovagina, 4 = breast augmentation)'].replace('', '-1')
+
+print("* NA and empty values have been successfully handled")
 
 # refine variables after handling NA 
 
