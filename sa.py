@@ -18,10 +18,13 @@ from sklearn.metrics import mean_squared_error, r2_score
 print("* All libraries have been successfull imported")
 
 # load in data
-data = pd.read_csv("sexual_orientation_auer_anonymized.csv")
+# LOE: In this copy of the data, I replaced/filled NA/blank with "0"
+data = pd.read_csv("data_simplified.csv")
 
 # list of independent variables 
-''' # Simplified below for basic testing purposes
+'''
+# LOE: Copied and simplified below for basic testing purposes
+# LOE: Saved for later if needed
 X = data[['sex (1=MtF; 2 =FtM)',
 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
 'age_of_onset',
@@ -45,40 +48,50 @@ X = data[['sex (1=MtF; 2 =FtM)',
 # dependent variable
 y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
 
-# replace NA values with a -1 to ensure consistency with categorical variables
-#data[''] = data[''].replace('NA', '-1')
-# See: https://stackoverflow.com/questions/38117016/update-pandas-dataframe-with-str-replace-vs-replace
+''' # LOE: Notes to Self
+# > Ignore NAs
+#   age_of_onset -> can maybe ignore NAs because they will probably throw off predictions? or just 0 fill
 
-''' # Loe notes to self
-> ignore NAs
-  age_of_onset -> can ignore NAs because they will probably throw off predictions
+# > Easier to start with
+#   sex (1=MtF; 2 =FtM)
+#   hormontherapy (1 =yes; 2 =no)
+#   sex reassignement surgery (1= yes; 2 = no)
 
-> easier to start with
-  sex (1=MtF; 2 =FtM)
-  hormontherapy (1 =yes; 2 =no)
-  sex reassignement surgery (1= yes; 2 = no)
+# > Intermediate complexity (probably good to add due to original study results; not yet sure how to handle)
+#   initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)
 
-> intermediate complexity
-  initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)
-
-> should probably ignore due to complexity
-  hormonetype
-  direction_change
+# > Should probably ignore due to high-seeming complexity
+#   hormonetype
+#   direction_change
 '''
 
-print("* NA and empty values have been successfully handled")
+# replace NA values with a -1 to ensure consistency with categorical variables
+'''
+# LOE: For copy/paste purposes
+#   data[''] = data[''].replace('NA', '-1')
+#   See: https://stackoverflow.com/questions/38117016/update-pandas-dataframe-with-str-replace-vs-replace
+# Alternative method for replacing
+#   data.fillna(0, inplace=True)
+'''
+
+# Fill NA with 0 for now 
+# Not sure if this actually works; it didn't seem to work until I changed the code to
+# use the copied csv instead. The main problem AFAIK is the rows of empty commas at the end
+data['sex (1=MtF; 2 =FtM)'] = data['sex (1=MtF; 2 =FtM)'].replace('NA', '0')
+data['hormontherapy (1 =yes; 2 =no)'] = data['hormontherapy (1 =yes; 2 =no)'].replace('NA', '0')
+data['sex reassignement surgery (1= yes; 2 = no)'] = data['sex reassignement surgery (1= yes; 2 = no)'].replace('NA', '0')
+
+print("* NA values have been successfully handled")
 
 # refine variables after handling NA 
-# not sure what you mean here? -Loe
+# LOE: not sure what you mean here?
 
 # perform regression 
-# regr = linear_model.LinearRegression()
-# regr.fit(X,y)
+regr = linear_model.LinearRegression()
+regr.fit(X,y)
 
-'''
-# Predict using args
+# LOE: Predict using args
 # 'sex (1=MtF; 2 =FtM)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
-# Result should be 1 or 2 or in that range
-predictIfChange = regr.predict([[2,2,2]]) # Arbitrary for now
+# Result should be 1 (yes) or 2 (no) or in that range
+predictIfChange = regr.predict([[2,1,1]]) # Arbitrary for now
 print(predictIfChange)
-'''
