@@ -18,8 +18,11 @@ from sklearn.metrics import mean_squared_error, r2_score
 print("* All libraries have been successfull imported")
 
 # load in data
-# LOE: In this copy of the data, I replaced/filled NA/blank with "0"
-data = pd.read_csv("data_simplified.csv")
+# LOE: data_simplified_preclean.csv is data_simplified but
+#      without all NA/empty values manually replaced to be 0.
+#      It is the same as sexual_orientation_auer_anonymized.csv,
+#      but without the rows of empty cells
+data = pd.read_csv("data_simplified_preclean.csv")
 
 # list of independent variables 
 '''
@@ -41,14 +44,6 @@ X = data[['sex (1=MtF; 2 =FtM)',
 'interval_horm_surg (interval from initiation of hormone therapy to sex reassignement surgery)']]
 '''
 
-X = data[['sex (1=MtF; 2 =FtM)',
-          'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
-          'hormontherapy (1 =yes; 2 =no)',
-          'sex reassignement surgery (1= yes; 2 = no)']]
-
-# dependent variable
-y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
-
 ''' # LOE: Notes to Self
 # > Ignore NAs
 #   age_of_onset -> can maybe ignore NAs because they will probably throw off predictions? or just 0 fill
@@ -66,28 +61,23 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 #   direction_change
 '''
 
-# replace NA values with a -1 to ensure consistency with categorical variables
-'''
-# LOE: For copy/paste purposes
-#   data[''] = data[''].replace('NA', '-1')
-#   See: https://stackoverflow.com/questions/38117016/update-pandas-dataframe-with-str-replace-vs-replace
-# Alternative method for replacing
-#   data.fillna(0, inplace=True)
-'''
+X = data[['sex (1=MtF; 2 =FtM)',
+          'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
+          'hormontherapy (1 =yes; 2 =no)',
+          'sex reassignement surgery (1= yes; 2 = no)']]
 
-# LOE: Fill NA with 0 for now 
-# Works fine in terms of replacing, BUT raises "ValueError: Input y contains NaN."
-# when using csv other than data_simplified.csv (which I manually cleaned)
-#print(data) # Test print
-data = data.fillna(0)
-#print(data) # Test print
+# dependent variable
+y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
 
-''' # LOE: This is column-specific and honestly I think we're better off replacing everything
-data['sex (1=MtF; 2 =FtM)'] = data['sex (1=MtF; 2 =FtM)'].replace('NA', '0')
-data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'] = data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'].replace('NA', '0')
-data['hormontherapy (1 =yes; 2 =no)'] = data['hormontherapy (1 =yes; 2 =no)'].replace('NA', '0')
-data['sex reassignement surgery (1= yes; 2 = no)'] = data['sex reassignement surgery (1= yes; 2 = no)'].replace('NA', '0')
-'''
+# Clean the data
+# Fill NA/empty with 0 because the numbers in the selected
+# columns used in X are categorical; also, dropping NA values
+# vastly reduces the number of rows from 115 to 15
+#print(data) # Test print
+X = X.fillna(0)         # Get X
+y = y.fillna(0)         # Get y
+data = data.fillna(0)   # Get anything left over
+#print(data) # Test print
 
 # LOE: Ignore NAs completely via dropping
 # Also works in replacing/dropping but vastly reduces number of tuples;
@@ -98,6 +88,7 @@ data = data.replace('NA',0)
 data = data.dropna()
 '''
 
+# Post-cleaning message
 print("* NA values have been successfully handled")
 
 # refine variables after handling NA 
