@@ -6,8 +6,8 @@
 # import libraries 
 import pandas as pd 
 import numpy as np 
-import matplotlib.pyplot as plt
-import seaborn as sns
+#import matplotlib.pyplot as plt # Optional to use
+#import seaborn as sns # Optional to use
 
 # from scikit-learn 
 from sklearn.model_selection import train_test_split
@@ -75,20 +75,35 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 #   data.fillna(0, inplace=True)
 '''
 
-# Fill NA with 0 for now 
-# Not sure if this actually works; it didn't seem to work until I changed the code to
-# use the copied csv instead. The main problem AFAIK is the rows of empty commas at the end
+# LOE: Fill NA with 0 for now 
+# Works fine in terms of replacing, BUT raises "ValueError: Input y contains NaN."
+# when using csv other than data_simplified.csv (which I manually cleaned)
+#print(data) # Test print
+data = data.fillna(0)
+#print(data) # Test print
+
+''' # LOE: This is column-specific and honestly I think we're better off replacing everything
 data['sex (1=MtF; 2 =FtM)'] = data['sex (1=MtF; 2 =FtM)'].replace('NA', '0')
 data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'] = data['initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)'].replace('NA', '0')
 data['hormontherapy (1 =yes; 2 =no)'] = data['hormontherapy (1 =yes; 2 =no)'].replace('NA', '0')
 data['sex reassignement surgery (1= yes; 2 = no)'] = data['sex reassignement surgery (1= yes; 2 = no)'].replace('NA', '0')
+'''
+
+# LOE: Ignore NAs completely via dropping
+# Also works in replacing/dropping but vastly reduces number of tuples;
+# drops from 115 to 15 rows
+'''
+data = data.replace('NA',0)
+#data = data.fillna(0)
+data = data.dropna()
+'''
 
 print("* NA values have been successfully handled")
 
 # refine variables after handling NA 
 # LOE: not sure what you mean here?
 
-# perform regression 
+# Perform regression 
 regr = linear_model.LinearRegression()
 regr.fit(X,y)
 
@@ -97,3 +112,7 @@ regr.fit(X,y)
 # Result should be 1 (yes) or 2 (no) or in that range
 predictIfChange = regr.predict([[2,3,1,1]]) # Arbitrary for now
 print(predictIfChange)
+
+# TBA: Correlation calculations (optional)
+
+# TBA: Z-test (compare FTM and MTF populations)
