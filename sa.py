@@ -1,5 +1,6 @@
 # CS3080 - Final Project 
 # Gender transitioning and changes in self-reported sexual orientation
+# Sam Allen and Loe Malabanan
 
 # using this tutorial to help me out --> https://www.w3schools.com/python/python_ml_multiple_regression.asp
 
@@ -19,56 +20,41 @@ from sklearn.metrics import mean_squared_error, r2_score
 # For saving files/directory work
 import os
 
-print("\n* All libraries have been successfully imported")
+print("* All libraries have been successfully imported")
 
-# load in data
-# LOE: data_simplified_preclean.csv is data_simplified but
-#      without all NA/empty values manually replaced to be 0.
-#      It is the same as sexual_orientation_auer_anonymized.csv,
+##############################################################################################################################
+# DATA SECTION ###############################################################################################################
+##############################################################################################################################
+
+# Load in data
+# LOE: data_simplified_preclean.csv is the same as sexual_orientation_auer_anonymized.csv,
 #      but without the rows of empty cells
 data = pd.read_csv("data_simplified_preclean.csv")
 
-# list of independent variables 
-'''
-# LOE: Copied and simplified below for basic testing purposes
-# LOE: Saved for later if needed
-X = data[['sex (1=MtF; 2 =FtM)',
-'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
-'age_of_onset',
-'onset_before_age_of_12 (1= before or at age of 12; after age of 12)',
-'age_psychol (age of first psychological counselling)',
-'age_role (age of start everday-experience)',
-'hormontherapy (1 =yes; 2 =no)',
-'age_hormonetherapy (age of initiation of hormonetherapy)',
-'hormonetype (1= T transdermal; 2 = T intramuscular; 3 = E + Antiandrogen; 4 = Estradiol transdermal; 5 = Estradiol oral; 6 = estradiol +gestagen)',
-'sex reassignement surgery (1= yes; 2 = no)',
-'age_surgery (age of sex reassignement surgery)', 
-'type_of_surgery (1 = hysterectomy + mastectomy; 2 = +penoid, 3 = neovagina, 4 = breast augmentation)', 
-'direction_change (direction of change in sexual orientation; 1= androphilic to gynephilic;  2=androphilic to bisexual; 3=gynephilic to androphilic; 4=gynephilic to bisexual, 5 = analloerotic to gynephilic; 6 =analloerotic to androphilic; 7 = analloerotic to bisexual; 8 = gynephilic to analloerotic) ',
-'interval_horm_surg (interval from initiation of hormone therapy to sex reassignement surgery)']]
-'''
-
+# Independent variable data
 X = data[['sex (1=MtF; 2 =FtM)',
           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
           'hormontherapy (1 =yes; 2 =no)',
           'sex reassignement surgery (1= yes; 2 = no)']]
 
-# dependent variable
+# Dependent variable data
 y = data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
 
 # Clean the data
 # Fill NA/empty with 0 because the numbers in the selected
 # columns used in X are categorical; also, dropping NA values
 # vastly reduces the number of rows from 115 to 15
-# print(data) # Test print
 X = X.fillna(0)         # Get X
 y = y.fillna(0)         # Get y
 data = data.fillna(0)   # Get anything left over
-#print(data) # Test print
 
 # Post-cleaning message
-print("* NA values have been successfully handled")
+print("* Data and NA values have been successfully handled")
 print("\n****************************************************************************************************************************\n")
+
+##############################################################################################################################
+# REGRESSION SECTION #########################################################################################################
+##############################################################################################################################
 
 # Perform regression 
 regr = linear_model.LinearRegression()
@@ -97,17 +83,22 @@ predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,3,1,1],[2,3,2,2],
                       [2,4,1,1],[2,4,2,2]]
 
+# Start outputting results
 print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
 
-print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
+print("\nResults of Sample MtF Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataMtFVals)):
     finalPrediction = regr.predict([predictDataMtFVals[i]])
     print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
 
-print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
+print("\nResults of Sample FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     finalPrediction = regr.predict([predictDataFtMVals[i]])
     print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+
+##############################################################################################################################
+# CORRELATION AND VISUALIZATIONS SECTION #####################################################################################
+##############################################################################################################################
 
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
@@ -130,8 +121,7 @@ print("\n***********************************************************************
 print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
 
 # Export dataframe as an HTML file so it can be viewed in web browser
-# LOE: I've changed this to save in CWD (where sa.py is run from)
-
+# File will save in CWD (where this file is run from)
 # Get current working directory
 dir_cwd = os.getcwd()
 
@@ -158,12 +148,17 @@ with open(htmlFilePath, "w") as f:
 # number of participants reported a change in sexual orientation prior to first psychological counseling and 
 # prior to initiation of cross-sex hormone treatment."
 
+##############################################################################################################################
+# Z-TEST SECTION #############################################################################################################
+##############################################################################################################################
+
 # SAM: Z-test (compare change in self-reported sexual orientation between FTM and MTF populations) 
 # Documentation for proportions_ztest() function --> https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html
 # Proportion: percentage of the population group that reports a change in self-reported sexual orientation
 
 # I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
-ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
+# Make a copy of the relevant data slice to avoid SettingWithCopyWarning
+ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0].copy()
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
 
 # Filter data to create variables for FTM and MTF populations 
@@ -174,8 +169,9 @@ FTMData = ztestData[ztestData['sex (1=MtF; 2 =FtM)'] == 2]['changesexorient (the
 MTFProp = MTFData.mean()
 FTMProp = FTMData.mean()
 print("\n****************************************************************************************************************************\n")
-print(f"MTF Proportion: {MTFProp:.4f}") # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
-print(f"FTM Proportion: {FTMProp:.4f}") # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
+print("Percent of study participants who reported a change in sexual orientation: ")
+print(f"MtF Proportion: {MTFProp:.4f}") # 0.338 - meaning 33.8% of MtF study participants reported a change in sexual orientation
+print(f"FtM Proportion: {FTMProp:.4f}") # 0.222 - meaning 22.2% of FtM study participants reported a change in sexual orientation
 
 # ^^ These results are mostly consistent with the conclusions of the study:
 # "About one third of MtF (32.9 %, N  =  23) reported a change in sexual orientation during 
