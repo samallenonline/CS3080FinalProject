@@ -144,7 +144,8 @@ styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') 
 
 # Print correlation matrix
 print("\n****************************************************************************************************************************\n")
-print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
+# UNCOMMENT LATER
+#print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
 
 # Export dataframe as an HTML file so it can be viewed in web browser
 # LOE: I've changed this to save in CWD (where sa.py is run from)

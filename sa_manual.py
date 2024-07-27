@@ -5,16 +5,11 @@
 import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
 
-# MANUAL FUNCTIONS START HERE! 
-# Load in data using pandas function - get rid of quotes in column names 
-df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
-df.columns = df.columns.str.strip().str.replace("'", "")
+###############################################################
+# FUNCTION SECTION ############################################
+###############################################################
 
-# Print column names
-print("\nColumn names for dataset:\n\n", df.columns)
-print("\n****************************************************************************************************************************\n")
-
-# Functions for simple math calculations 
+# Functions for simple math calculations ######################
 def calculateMean(nums):
     return sum(nums) / len(nums)
     
@@ -28,7 +23,7 @@ def calculatePearsonCorr(x, y):
     covariance = sum((xi - muX) * (yi - muY) for xi, yi in zip(x, y))
     return covariance / ((len(x) - 1) * stddevX * stddevY)
 
-# Function to calculate correlations
+# Function to calculate correlations ##########################
 def calculateCorrelations(dataFrame):    
     # Initialize variables 
     correlations = {}
@@ -56,6 +51,23 @@ def calculateCorrelations(dataFrame):
 
     return correlations
 
+###############################################################
+# MAIN PROGRAM SECTION ########################################
+###############################################################
+
+# MANUAL FUNCTIONS START HERE! 
+# Load in data using pandas function - get rid of quotes in column names 
+df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
+df.columns = df.columns.str.strip().str.replace("'", "")
+
+###############################################################
+# CORRELATION SECTION #########################################
+###############################################################
+
+# Print column names
+print("\nColumn names for dataset:\n\n", df.columns)
+print("\n****************************************************************************************************************************\n")
+
 # Selecting columns to be used to calculate correlations
 columnsOfInterest = [
     'sex (1=MtF; 2 =FtM)',
@@ -78,6 +90,10 @@ for (col1, col2), corr in correlations.items():
 
 #^^Results of the manual correlation calculations are identical to the values returned using the corr() function
 # in the pandas library.
+    
+###############################################################
+# Z-TEST SECTION ##############################################
+###############################################################
 
 # Perform z-test and print results 
 print("\n****************************************************************************************************************************\n")
