@@ -92,37 +92,40 @@ print("Results of linear regression:")
 regr = linear_model.LinearRegression()
 regr.fit(X,y)
 
-# LOE: Predict using args
-# 'sex (1=MtF; 2 =FtM)', 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
-# Result should be 1 (yes) or 2 (no) or in that range
 # Arbitrary test individuals (FTM/BI/HRT/SRG)
-predictIfChange1311 = regr.predict([[1,3,1,1]]) # MtF bi YES HRT/surgery
-predictIfChange1322 = regr.predict([[1,3,2,2]]) # MtF bi NO HRT/surgery
-predictIfChange1111 = regr.predict([[1,1,1,1]]) # MtF andr YES HRT/surgery
-predictIfChange1122 = regr.predict([[1,1,2,2]]) # MtF andr NO HRT/surgery
-predictIfChange1211 = regr.predict([[1,2,1,1]]) # MtF gyn YES HRT/surgery
-predictIfChange1222 = regr.predict([[1,2,2,2]]) # MtF gyn NO HRT/surgery
+# Sample prediction data + fitting
+# 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
+# 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
+# Result should be 1 (yes) or 2 (no) or in that range
+predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
+                      [1,2,1,1],[1,2,2,2],
+                      [1,3,1,1],[1,3,2,2],
+                      [1,4,1,1],[1,4,2,2]]
 
-predictIfChange2311 = regr.predict([[2,3,1,1]]) # FtM bi YES HRT/surgery
-predictIfChange2322 = regr.predict([[2,1,2,2]]) # FtM bi NO HRT/surgery
-predictIfChange2111 = regr.predict([[2,1,1,1]]) # FtM andr YES HRT/surgery
-predictIfChange2122 = regr.predict([[2,1,2,2]]) # FtM andr NO HRT/surgery
-predictIfChange2211 = regr.predict([[2,2,1,1]]) # FtM gyn YES HRT/surgery
-predictIfChange2222 = regr.predict([[2,2,2,2]]) # FtM gyn NO HRT/surgery
-print("Predictions for if a person will report a change under certain conditions: ")
-print("Person 1311: " + str(predictIfChange1311))
-print("Person 1322: " + str(predictIfChange1322))
-print("Person 1111: " + str(predictIfChange1111))
-print("Person 1122: " + str(predictIfChange1122))
-print("Person 1211: " + str(predictIfChange1211))
-print("Person 1222: " + str(predictIfChange1222))
-print() # Separator
-print("Person 2311: " + str(predictIfChange2311))
-print("Person 2322: " + str(predictIfChange2322))
-print("Person 2111: " + str(predictIfChange2111))
-print("Person 2122: " + str(predictIfChange2122))
-print("Person 2211: " + str(predictIfChange2211))
-print("Person 2222: " + str(predictIfChange2222))
+predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
+                      [2,2,1,1],[2,2,2,2],
+                      [2,3,1,1],[2,3,2,2],
+                      [2,4,1,1],[2,4,2,2]]
+
+print("Now predicting likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
+
+print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
+for i in range(len(predictDataMtFVals)):
+    finalPrediction = regr.predict([predictDataMtFVals[i]])
+    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+
+print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
+for i in range(len(predictDataFtMVals)):
+    finalPrediction = regr.predict([predictDataFtMVals[i]])
+    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
 
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
