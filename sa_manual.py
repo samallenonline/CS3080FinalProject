@@ -4,10 +4,28 @@
 # Import libraries 
 import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
+import numpy as np # For more math since numpy is allowed
 
 ###############################################################
 # FUNCTION SECTION ############################################
 ###############################################################
+
+# Functions for regression ####################################
+def fit(inX,iny):
+    # X and y will be cleaned before being passed in
+    # Change X and y to numpy arrays and reshape y
+    X = np.array(inX)
+    X = X.astype(float)
+    y = np.array(iny)
+    y = y.astype(float)
+    y = np.array(y).reshape((len(y),1))
+
+    # Add bias terms column to X
+    bias = np.ones((len(X),1))
+    X = np.append(bias, X, axis=1)
+
+
+
 
 # Functions for simple math calculations ######################
 def calculateMean(nums):
@@ -59,6 +77,30 @@ def calculateCorrelations(dataFrame):
 # Load in data using pandas function - get rid of quotes in column names 
 df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
 df.columns = df.columns.str.strip().str.replace("'", "")
+
+###############################################################
+# REGRESSION SECTION ##########################################
+###############################################################
+
+# Independent variables
+X = df[['sex (1=MtF; 2 =FtM)',
+          'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
+          'hormontherapy (1 =yes; 2 =no)',
+          'sex reassignement surgery (1= yes; 2 = no)']]
+
+# dDpendent variable
+y = df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
+
+fit(X,y)
+
+# Clean the data
+# Fill NA/empty with 0 because the numbers in the selected
+# columns used in X are categorical; also, dropping NA values
+# vastly reduces the number of rows from 115 to 15
+# print(data) # Test print
+X = X.fillna(0)         # Get X
+y = y.fillna(0)         # Get y
+df = df.fillna(0)   # Get anything left over
 
 ###############################################################
 # CORRELATION SECTION #########################################
