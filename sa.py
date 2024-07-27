@@ -16,7 +16,10 @@ from sklearn import linear_model
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
-print("* All libraries have been successfull imported")
+# For saving files/directory work
+import os
+
+print("* All libraries have been successfully imported")
 
 # load in data
 # LOE: data_simplified_preclean.csv is data_simplified but
@@ -99,8 +102,34 @@ regr.fit(X,y)
 # LOE: Predict using args
 # 'sex (1=MtF; 2 =FtM)', 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
-predictIfChange = regr.predict([[2,3,1,1]]) # Arbitrary for now
-print(predictIfChange)
+# Arbitrary test individuals (FTM/BI/HRT/SRG)
+predictIfChange1311 = regr.predict([[1,3,1,1]]) # MtF bi YES HRT/surgery
+predictIfChange1322 = regr.predict([[1,3,2,2]]) # MtF bi NO HRT/surgery
+predictIfChange1111 = regr.predict([[1,1,1,1]]) # MtF andr YES HRT/surgery
+predictIfChange1122 = regr.predict([[1,1,2,2]]) # MtF andr NO HRT/surgery
+predictIfChange1211 = regr.predict([[1,2,1,1]]) # MtF gyn YES HRT/surgery
+predictIfChange1222 = regr.predict([[1,2,2,2]]) # MtF gyn NO HRT/surgery
+
+predictIfChange2311 = regr.predict([[2,3,1,1]]) # FtM bi YES HRT/surgery
+predictIfChange2322 = regr.predict([[2,1,2,2]]) # FtM bi NO HRT/surgery
+predictIfChange2111 = regr.predict([[2,1,1,1]]) # FtM andr YES HRT/surgery
+predictIfChange2122 = regr.predict([[2,1,2,2]]) # FtM andr NO HRT/surgery
+predictIfChange2211 = regr.predict([[2,2,1,1]]) # FtM gyn YES HRT/surgery
+predictIfChange2222 = regr.predict([[2,2,2,2]]) # FtM gyn NO HRT/surgery
+print("Predictions for if a person will report a change under certain conditions: ")
+print("Person 1311: " + str(predictIfChange1311))
+print("Person 1322: " + str(predictIfChange1322))
+print("Person 1111: " + str(predictIfChange1111))
+print("Person 1122: " + str(predictIfChange1122))
+print("Person 1211: " + str(predictIfChange1211))
+print("Person 1222: " + str(predictIfChange1222))
+print() # Separator
+print("Person 2311: " + str(predictIfChange2311))
+print("Person 2322: " + str(predictIfChange2322))
+print("Person 2111: " + str(predictIfChange2111))
+print("Person 2122: " + str(predictIfChange2122))
+print("Person 2211: " + str(predictIfChange2211))
+print("Person 2222: " + str(predictIfChange2222))
 
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
@@ -115,11 +144,20 @@ columnsOfInterest = [
 # Utilizing corr() function from pandas library to calculate correlations 
 correlationsData = data[columnsOfInterest]
 correlationMatrix = correlationsData.corr()
-print(correlationMatrix)
+# UNCOMMENT LATER
+#print("Correlation matrix: \n" + str(correlationMatrix))
 styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') # Produces a matrix of correlations with color-coding to appear like a heatmap
 
 # Export dataframe as an HTML file so it can be viewed in web browser
-htmlFilePath = "/workspaces/CS3080FinalProject/correlationMatrix.html"
+# LOE: I've changed this to save in CWD (where sa.py is run from)
+
+# Get current working directory
+dir_cwd = os.getcwd()
+
+# Append file name to CWD path and save for use
+htmlFilePath = dir_cwd + "\\correlationMatrix2.html"
+
+# Write to file
 with open(htmlFilePath, "w") as f:
     f.write(styledCorrMatrix.to_html())
 
@@ -154,8 +192,8 @@ FTMData = ztestData[ztestData['sex (1=MtF; 2 =FtM)'] == 2]['changesexorient (the
 # Calculate proportions for each population group (how many 1 values under changesexorient)
 MTFProp = MTFData.mean()
 FTMProp = FTMData.mean()
-print(MTFProp) # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
-print(FTMProp) # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
+print("Percent of MTF participants who reported a change in sexual orientation: " + str(MTFProp * 100)) # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
+print("Percent of FTM participants who reported a change in sexual orientation: " + str(FTMProp * 100)) # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
 
 # ^^ These results are mostly consistent with the conclusions of the study:
 # "About one third of MtF (32.9 %, N  =  23) reported a change in sexual orientation during 
@@ -167,7 +205,7 @@ nobs = [len(MTFData), len(FTMData)] # Number of observations
 
 # Perform z-test and save results to a variable 
 zTestResults = proportions_ztest(count, nobs)
-print(zTestResults)
+print("Z-test results (test statistic, P-value): " + str(zTestResults))
 
 # Z-TEST RESULTS
 # Test statistic: 1.33
