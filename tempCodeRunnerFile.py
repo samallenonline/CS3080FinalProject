@@ -1,1 +1,1 @@
-2,7,10
+var_intc + var_coef
