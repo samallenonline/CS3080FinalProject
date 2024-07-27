@@ -48,23 +48,6 @@ X = data[['sex (1=MtF; 2 =FtM)',
 'interval_horm_surg (interval from initiation of hormone therapy to sex reassignement surgery)']]
 '''
 
-''' # LOE: Notes to Self
-# > Ignore NAs
-#   age_of_onset -> can maybe ignore NAs because they will probably throw off predictions? or just 0 fill
-
-# > Easier to start with
-#   sex (1=MtF; 2 =FtM)
-#   hormontherapy (1 =yes; 2 =no)
-#   sex reassignement surgery (1= yes; 2 = no)
-
-# > Intermediate complexity (probably good to add due to original study results; not yet sure how to handle)
-#   initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)
-
-# > Should probably ignore due to high-seeming complexity
-#   hormonetype
-#   direction_change
-'''
-
 X = data[['sex (1=MtF; 2 =FtM)',
           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
           'hormontherapy (1 =yes; 2 =no)',
@@ -88,9 +71,8 @@ print("* NA values have been successfully handled")
 print("\n****************************************************************************************************************************\n")
 
 # Perform regression 
-print("Results of linear regression:")
 regr = linear_model.LinearRegression()
-regr.fit(X,y)
+regr.fit(X.values,y)
 
 # Arbitrary test individuals (FTM/BI/HRT/SRG)
 # Sample prediction data + fitting
@@ -115,7 +97,7 @@ predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,3,1,1],[2,3,2,2],
                       [2,4,1,1],[2,4,2,2]]
 
-print("Now predicting likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
+print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
 
 print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataMtFVals)):
@@ -126,9 +108,6 @@ print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     finalPrediction = regr.predict([predictDataFtMVals[i]])
     print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
-
-# Separator
-print("\n****************************************************************************************************************************\n")
 
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
@@ -157,8 +136,7 @@ print(f"Results of correlation calculations (color-coded correlation matrix has 
 dir_cwd = os.getcwd()
 
 # Append file name to CWD path and save for use
-# LOE: Should probably remove the "2" later
-htmlFilePath = dir_cwd + "\\correlationMatrix2.html"
+htmlFilePath = dir_cwd + "\\correlationMatrix.html"
 
 # Write to file
 with open(htmlFilePath, "w") as f:
