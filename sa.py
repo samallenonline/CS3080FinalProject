@@ -155,6 +155,7 @@ styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') 
 dir_cwd = os.getcwd()
 
 # Append file name to CWD path and save for use
+# LOE: Should probably remove the "2" later
 htmlFilePath = dir_cwd + "\\correlationMatrix2.html"
 
 # Write to file
