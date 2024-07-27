@@ -6,28 +6,49 @@ import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
 import numpy as np # For more math since numpy is allowed
 
-###############################################################
-# FUNCTION SECTION ############################################
-###############################################################
+##############################################################################################################################
+# FUNCTION SECTION ###########################################################################################################
+##############################################################################################################################
 
-# Functions for regression ####################################
-def fit(inX,iny):
-    # X and y will be cleaned before being passed in
-    # Change X and y to numpy arrays and reshape y
+# Functions for regression ###################################################################################################
+def addBiasToX(npX):
+    bias = np.ones((len(npX),1))
+    X = np.append(bias, npX, axis=1)
+
+    return X
+
+def fitXdata(inX):
+    # Convert to numpy float array
     X = np.array(inX)
     X = X.astype(float)
+
+    # Add bias as is necessary for normal equation method
+    X = addBiasToX(X)
+
+    return X
+
+def fitYdata(iny):
+    # Convert to numpy float array and reshape
     y = np.array(iny)
     y = y.astype(float)
     y = np.array(y).reshape((len(y),1))
 
-    # Add bias terms column to X
-    bias = np.ones((len(X),1))
-    X = np.append(bias, X, axis=1)
+    return y
 
+def fitPredictionData(inData):
+    inData = np.insert(inData, 0, 1, axis=0)
+    return inData
 
+def getNormalBeta(npX,npy):
+    X = npX
+    y = npy
+    beta = np.dot((np.linalg.inv(np.dot(X.T,X))), np.dot(X.T,y))
+    return beta
 
+def getPrediction(npX,beta):
+    return np.dot(npX,beta)
 
-# Functions for simple math calculations ######################
+# Functions for simple math calculations #####################################################################################
 def calculateMean(nums):
     return sum(nums) / len(nums)
     
@@ -41,7 +62,7 @@ def calculatePearsonCorr(x, y):
     covariance = sum((xi - muX) * (yi - muY) for xi, yi in zip(x, y))
     return covariance / ((len(x) - 1) * stddevX * stddevY)
 
-# Function to calculate correlations ##########################
+# Function to calculate correlations #########################################################################################
 def calculateCorrelations(dataFrame):    
     # Initialize variables 
     correlations = {}
@@ -69,42 +90,75 @@ def calculateCorrelations(dataFrame):
 
     return correlations
 
-###############################################################
-# MAIN PROGRAM SECTION ########################################
-###############################################################
+##############################################################################################################################
+# MAIN PROGRAM SECTION #######################################################################################################
+##############################################################################################################################
 
 # MANUAL FUNCTIONS START HERE! 
 # Load in data using pandas function - get rid of quotes in column names 
 df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
 df.columns = df.columns.str.strip().str.replace("'", "")
 
-###############################################################
-# REGRESSION SECTION ##########################################
-###############################################################
+##############################################################################################################################
+# REGRESSION SECTION #########################################################################################################
+##############################################################################################################################
 
-# Independent variables
-X = df[['sex (1=MtF; 2 =FtM)',
+# Independent variables data
+Xdata = df[['sex (1=MtF; 2 =FtM)',
           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
           'hormontherapy (1 =yes; 2 =no)',
           'sex reassignement surgery (1= yes; 2 = no)']]
 
-# dDpendent variable
-y = df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
-
-fit(X,y)
+# Dependent variable data
+ydata = df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
 
 # Clean the data
 # Fill NA/empty with 0 because the numbers in the selected
 # columns used in X are categorical; also, dropping NA values
 # vastly reduces the number of rows from 115 to 15
-# print(data) # Test print
-X = X.fillna(0)         # Get X
-y = y.fillna(0)         # Get y
-df = df.fillna(0)   # Get anything left over
+Xdata = Xdata.fillna(0)
+ydata = ydata.fillna(0)
 
-###############################################################
-# CORRELATION SECTION #########################################
-###############################################################
+# Fit X and y for calculation purposes
+Xdata = fitXdata(Xdata)
+ydata = fitYdata(ydata)
+
+# Use normal equation method to get beta
+beta = getNormalBeta(Xdata,ydata)
+
+# Sample prediction data + fitting
+# 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
+# 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
+# Result should be 1 (yes) or 2 (no) or in that range
+predictDataMtFNames = ["  Bi/Y/Y", "  Bi/N/N",
+                       "Andr/Y/Y", "Andr/N/N",
+                       " Gyn/Y/Y", " Gyn/N/N"]
+predictDataMtFVals = [[1,3,1,1],[1,3,2,2],
+                      [1,1,1,1],[1,1,2,2],
+                      [1,2,1,1],[1,2,2,2]]
+
+predictDataFtMNames = ["  Bi/Y/Y", "  Bi/N/N",
+                       "Andr/Y/Y", "Andr/N/N",
+                       " Gyn/Y/Y", " Gyn/N/N"]
+predictDataFtMVals = [[2,3,1,1],[2,3,2,2],
+                      [2,1,1,1],[2,1,2,2],
+                      [2,2,1,1],[2,2,2,2]]
+
+print("[MtF PREDICTIONS]")
+for i in range(len(predictDataMtFVals)):
+    predictData = fitPredictionData(predictDataMtFVals[i])
+    finalPrediction = getPrediction(predictData,beta)
+    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+
+print("[FtM PREDICTIONS]")
+for i in range(len(predictDataFtMVals)):
+    predictData = fitPredictionData(predictDataFtMVals[i])
+    finalPrediction = getPrediction(predictData,beta)
+    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+
+##############################################################################################################################
+# CORRELATION SECTION ########################################################################################################
+##############################################################################################################################
 
 # Print column names
 print("\nColumn names for dataset:\n\n", df.columns)
@@ -133,9 +187,9 @@ for (col1, col2), corr in correlations.items():
 #^^Results of the manual correlation calculations are identical to the values returned using the corr() function
 # in the pandas library.
     
-###############################################################
-# Z-TEST SECTION ##############################################
-###############################################################
+##############################################################################################################################
+# Z-TEST SECTION #############################################################################################################
+##############################################################################################################################
 
 # Perform z-test and print results 
 print("\n****************************************************************************************************************************\n")
