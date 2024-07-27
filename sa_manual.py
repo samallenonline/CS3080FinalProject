@@ -4,7 +4,7 @@
 # Import libraries 
 import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
-import numpy as np # For more math since numpy is allowed
+import numpy as np # For more math in regression section
 
 ##############################################################################################################################
 # FUNCTION SECTION ###########################################################################################################
