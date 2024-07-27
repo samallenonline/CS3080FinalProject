@@ -6,13 +6,14 @@
 # import libraries 
 import pandas as pd 
 import numpy as np 
-#import matplotlib.pyplot as plt # Optional to use
-#import seaborn as sns # Optional to use
+# import matplotlib.pyplot as plt # Optional to use - for visualizations
+# import seaborn as sns # Optional to use - for visualizations
+from statsmodels.stats.proportion import proportions_ztest # To perform z-test
 
 # from scikit-learn 
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
 from sklearn import linear_model
+from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
 print("* All libraries have been successfull imported")
@@ -91,9 +92,6 @@ data = data.dropna()
 # Post-cleaning message
 print("* NA values have been successfully handled")
 
-# refine variables after handling NA 
-# LOE: not sure what you mean here?
-
 # Perform regression 
 regr = linear_model.LinearRegression()
 regr.fit(X,y)
@@ -104,6 +102,82 @@ regr.fit(X,y)
 predictIfChange = regr.predict([[2,3,1,1]]) # Arbitrary for now
 print(predictIfChange)
 
-# TBA: Correlation calculations (optional)
+# SAM: Correlation calculations and visualizations 
+# Selecting columns to be used for correlations matrix 
+columnsOfInterest = [
+    'sex (1=MtF; 2 =FtM)',
+    'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
+    'hormontherapy (1 =yes; 2 =no)',
+    'sex reassignement surgery (1= yes; 2 = no)',
+    'changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'
+]
 
-# TBA: Z-test (compare FTM and MTF populations)
+# Utilizing corr() function from pandas library to calculate correlations 
+correlationsData = data[columnsOfInterest]
+correlationMatrix = correlationsData.corr()
+print(correlationMatrix)
+styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') # Produces a matrix of correlations with color-coding to appear like a heatmap
+
+# Export dataframe as an HTML file so it can be viewed in web browser
+htmlFilePath = "/workspaces/CS3080FinalProject/correlationMatrix.html"
+with open(htmlFilePath, "w") as f:
+    f.write(styledCorrMatrix.to_html())
+
+# CORRELATION RESULTS AND INTERPRETATIONS
+# changesexorient and sex: 	                        0.158631
+# changesexorient and initial_sex_orientation:      0.123523
+# changesexorient and hormontherapy:                0.074691
+# cchangesexorient and sex_reassignment_surgery:    0.155776
+
+# According to the results of the correlation calculations, there appears to be very weak correlations 
+# between change in self-reported sexual orientation and initial sex, intial sex orientation, whether the 
+# participant is taking hormone therapy, and whether the participant has undergone gender-affirming surgery. 
+
+# ^^ These correlations are consistent with the conclusions of the study "Transgender Transitioning and Change 
+# of Self-Reported Sexual Orientation", which states, "...self-reported change in sexual orientation is a common 
+# phenomenon in transsexual persons. Transition was not directly involved in this change, since a significant 
+# number of participants reported a change in sexual orientation prior to first psychological counseling and 
+# prior to initiation of cross-sex hormone treatment."
+
+# SAM: Z-test (compare change in self-reported sexual orientation between FTM and MTF populations) 
+# Reference for the proportions_ztest function --> https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html
+# Proportion: percentage of the population group that reports a change in self-reported sexual orientation
+
+# I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
+ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
+ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
+
+# Filter data to create variables for FTM and MTF populations 
+MTFData = ztestData[ztestData['sex (1=MtF; 2 =FtM)'] == 1]['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
+FTMData = ztestData[ztestData['sex (1=MtF; 2 =FtM)'] == 2]['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)']
+
+# Calculate proportions for each population group (how many 1 values under changesexorient)
+MTFProp = MTFData.mean()
+FTMProp = FTMData.mean()
+print(MTFProp) # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
+print(FTMProp) # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
+
+# ^^ These results are mostly consistent with the conclusions of the study:
+# "About one third of MtF (32.9 %, N  =  23) reported a change in sexual orientation during 
+# their life, in contrast to 22.2 % (N  =  10) in the FtM group (n.s.)."
+
+# Count the number of successes and trials for each group
+count = [sum(MTFData == 1), sum(FTMData == 1)] # Number of successes
+nobs = [len(MTFData), len(FTMData)] # Number of observations 
+
+# Perform z-test and save results to a variable 
+zTestResults = proportions_ztest(count, nobs)
+print(zTestResults)
+
+# Z-TEST RESULTS
+# Test statistic: 1.33
+# P-value: 0.18
+
+# Null hypothesis: There is no significant difference in the frequency of change in self-reported sexual orientation
+# between FTM and MTF population groups 
+# Alternative hypothesis: There is a significant difference in the frequency of change in self-reported sexual orientation
+# between FTM and MTF population groups 
+
+# ^^Considering the p-value of the z-test, the result is not significant and the null hypothesis is 
+# accepted. Therefore, there is no significant difference in the frequency of change in self-reported 
+# sexual orientation between FTM and MTF population groups.
