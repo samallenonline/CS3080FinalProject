@@ -30,3 +30,25 @@ for i in range(len(data)):
             data[i][j] = 0
 
 print(data)
+
+# Separate X and y
+var_xCols = [1,2,7,10]
+X = []
+y = []
+
+# X is col 1,2,7,10
+for col in var_xCols:
+    var_newRow = []
+
+    for row in data:
+        var_newRow.append(row[col])
+    
+    X.append(var_newRow)
+
+print("X values:\n" + str(X))
+
+# y is col 13
+for row in data:
+    y.append(row[13])
+
+print("y values:\n" + str(y))
