@@ -144,14 +144,11 @@ columnsOfInterest = [
 # Documentation for corr() function -> https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
 correlationsData = data[columnsOfInterest]
 correlationMatrix = correlationsData.corr()
-# UNCOMMENT LATER
-#print("Correlation matrix: \n" + str(correlationMatrix))
 styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') # Produces a matrix of correlations with color-coding to appear like a heatmap
 
 # Print correlation matrix
 print("\n****************************************************************************************************************************\n")
-# UNCOMMENT LATER
-#print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
+print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
 
 # Export dataframe as an HTML file so it can be viewed in web browser
 # LOE: I've changed this to save in CWD (where sa.py is run from)
