@@ -127,6 +127,9 @@ for i in range(len(predictDataFtMVals)):
     finalPrediction = regr.predict([predictDataFtMVals[i]])
     print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
 
+# Separator
+print("\n****************************************************************************************************************************\n")
+
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
 columnsOfInterest = [
