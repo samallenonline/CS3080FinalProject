@@ -19,7 +19,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 # For saving files/directory work
 import os
 
-print("* All libraries have been successfully imported")
+print("\n* All libraries have been successfully imported")
 
 # load in data
 # LOE: data_simplified_preclean.csv is data_simplified but
@@ -77,25 +77,18 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 # Fill NA/empty with 0 because the numbers in the selected
 # columns used in X are categorical; also, dropping NA values
 # vastly reduces the number of rows from 115 to 15
-#print(data) # Test print
+# print(data) # Test print
 X = X.fillna(0)         # Get X
 y = y.fillna(0)         # Get y
 data = data.fillna(0)   # Get anything left over
 #print(data) # Test print
 
-# LOE: Ignore NAs completely via dropping
-# Also works in replacing/dropping but vastly reduces number of tuples;
-# drops from 115 to 15 rows
-'''
-data = data.replace('NA',0)
-#data = data.fillna(0)
-data = data.dropna()
-'''
-
 # Post-cleaning message
 print("* NA values have been successfully handled")
+print("\n****************************************************************************************************************************\n")
 
 # Perform regression 
+print("Results of linear regression:")
 regr = linear_model.LinearRegression()
 regr.fit(X,y)
 
@@ -142,11 +135,16 @@ columnsOfInterest = [
 ]
 
 # Utilizing corr() function from pandas library to calculate correlations 
+# Documentation for corr() function -> https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
 correlationsData = data[columnsOfInterest]
 correlationMatrix = correlationsData.corr()
 # UNCOMMENT LATER
 #print("Correlation matrix: \n" + str(correlationMatrix))
 styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') # Produces a matrix of correlations with color-coding to appear like a heatmap
+
+# Print correlation matrix
+print("\n****************************************************************************************************************************\n")
+print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
 
 # Export dataframe as an HTML file so it can be viewed in web browser
 # LOE: I've changed this to save in CWD (where sa.py is run from)
@@ -179,7 +177,7 @@ with open(htmlFilePath, "w") as f:
 # prior to initiation of cross-sex hormone treatment."
 
 # SAM: Z-test (compare change in self-reported sexual orientation between FTM and MTF populations) 
-# Reference for the proportions_ztest function --> https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html
+# Documentation for proportions_ztest() function --> https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html
 # Proportion: percentage of the population group that reports a change in self-reported sexual orientation
 
 # I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
@@ -193,8 +191,9 @@ FTMData = ztestData[ztestData['sex (1=MtF; 2 =FtM)'] == 2]['changesexorient (the
 # Calculate proportions for each population group (how many 1 values under changesexorient)
 MTFProp = MTFData.mean()
 FTMProp = FTMData.mean()
-print("Percent of MTF participants who reported a change in sexual orientation: " + str(MTFProp * 100)) # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
-print("Percent of FTM participants who reported a change in sexual orientation: " + str(FTMProp * 100)) # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
+print("\n****************************************************************************************************************************\n")
+print(f"MTF Proportion: {MTFProp:.4f}") # 0.338 - meaning 33.8% of MTF study participants reported a change in sexual orientation
+print(f"FTM Proportion: {FTMProp:.4f}") # 0.222 - meaning 22.2% of FTM study participants reported a change in sexual orientation
 
 # ^^ These results are mostly consistent with the conclusions of the study:
 # "About one third of MtF (32.9 %, N  =  23) reported a change in sexual orientation during 
@@ -206,7 +205,7 @@ nobs = [len(MTFData), len(FTMData)] # Number of observations
 
 # Perform z-test and save results to a variable 
 zTestResults = proportions_ztest(count, nobs)
-print("Z-test results (test statistic, P-value): " + str(zTestResults))
+print("\nResults of z-test for proportions:\n", zTestResults)
 
 # Z-TEST RESULTS
 # Test statistic: 1.33
