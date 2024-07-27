@@ -130,31 +130,40 @@ beta = getNormalBeta(Xdata,ydata)
 # 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
-predictDataMtFNames = ["  Bi/Y/Y", "  Bi/N/N",
-                       "Andr/Y/Y", "Andr/N/N",
-                       " Gyn/Y/Y", " Gyn/N/N"]
-predictDataMtFVals = [[1,3,1,1],[1,3,2,2],
-                      [1,1,1,1],[1,1,2,2],
-                      [1,2,1,1],[1,2,2,2]]
+predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
+                      [1,2,1,1],[1,2,2,2],
+                      [1,3,1,1],[1,3,2,2],
+                      [1,4,1,1],[1,4,2,2]]
 
-predictDataFtMNames = ["  Bi/Y/Y", "  Bi/N/N",
-                       "Andr/Y/Y", "Andr/N/N",
-                       " Gyn/Y/Y", " Gyn/N/N"]
-predictDataFtMVals = [[2,3,1,1],[2,3,2,2],
-                      [2,1,1,1],[2,1,2,2],
-                      [2,2,1,1],[2,2,2,2]]
+predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
+                      [2,2,1,1],[2,2,2,2],
+                      [2,3,1,1],[2,3,2,2],
+                      [2,4,1,1],[2,4,2,2]]
 
-print("[MtF PREDICTIONS]")
+print("Now predicting likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
+
+print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataMtFVals)):
     predictData = fitPredictionData(predictDataMtFVals[i])
     finalPrediction = getPrediction(predictData,beta)
     print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
 
-print("[FtM PREDICTIONS]")
+print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     predictData = fitPredictionData(predictDataFtMVals[i])
     finalPrediction = getPrediction(predictData,beta)
     print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+
+# Separator
+print("\n****************************************************************************************************************************\n")
 
 ##############################################################################################################################
 # CORRELATION SECTION ########################################################################################################
