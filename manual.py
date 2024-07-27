@@ -10,7 +10,6 @@ path_dataCSV = dir_cwd + "\\data_simplified_preclean.csv"
 # Read CSV to get data
 data = []
 with open(path_dataCSV, 'r') as file_origFile:
-    # Read and store file contents ################
     # Make csv reader object
     csvreader = csv.reader(file_origFile)
     
@@ -21,9 +20,7 @@ with open(path_dataCSV, 'r') as file_origFile:
     for row in csvreader:
         data.append(row)
 
-#print(data)
-
-# Fill NAs/empty with 0s
+# Clean data; fill NAs/empty with 0s
 for i in range(len(data)):
     for j in range(len(data[i])):
         if (data[i][j] == '' or data[i][j] == 'NA'):
@@ -36,19 +33,31 @@ var_xCols = [1,2,7,10]
 X = []
 y = []
 
-# X is col 1,2,7,10
+# Extract from data; X is col 1,2,7,10
 for col in var_xCols:
     var_newRow = []
 
     for row in data:
-        var_newRow.append(row[col])
+        var_newRow.append(int(row[col]))
     
     X.append(var_newRow)
 
+# Test print
 print("X values:\n" + str(X))
 
-# y is col 13
+# Extract from data; y is only col 13
 for row in data:
-    y.append(row[13])
+    y.append(int(row[13]))
 
+# Test print
 print("y values:\n" + str(y))
+
+# Get row means in X
+Xmeans = []
+for row in X:
+    var_rowSum = sum(row)
+    var_rowMean = var_rowSum / len(row)
+    Xmeans.append(var_rowMean)
+
+# Test print
+print("Means of rows in X: " + str(Xmeans))
