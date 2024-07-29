@@ -1,8 +1,6 @@
 # CS3080 - Final Project 
 # Gender transitioning and changes in self-reported sexual orientation
 
-# using this tutorial to help me out --> https://www.w3schools.com/python/python_ml_multiple_regression.asp
-
 # import libraries 
 import pandas as pd 
 import numpy as np 
@@ -163,7 +161,8 @@ with open(htmlFilePath, "w") as f:
 # Proportion: percentage of the population group that reports a change in self-reported sexual orientation
 
 # I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
-ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
+# Make a copy of the relevant data slice to avoid SettingWithCopyWarning
+ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0].copy()
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
 
 # Filter data to create variables for FTM and MTF populations 
