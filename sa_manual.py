@@ -27,7 +27,7 @@ def fitXdata(inX):
 
     return X
 
-def fitYdata(iny):
+def fityData(iny):
     # Convert to numpy float array and reshape
     y = np.array(iny)
     y = y.astype(float)
@@ -40,9 +40,8 @@ def fitPredictionData(inData):
     return inData
 
 def getNormalBeta(npX,npy):
-    X = npX
-    y = npy
-    beta = np.dot((np.linalg.inv(np.dot(X.T,X))), np.dot(X.T,y))
+    # Use normal equation beta = [(X^T X)^(-1)] X^T y
+    beta = np.dot((np.linalg.inv(np.dot(npX.T,npX))), np.dot(npX.T,npy))
     return beta
 
 # Functions for math calculations 
@@ -123,7 +122,7 @@ ydata = ydata.fillna(0)
 
 # Fit X and y for calculation purposes
 Xdata = fitXdata(Xdata)
-ydata = fitYdata(ydata)
+ydata = fityData(ydata)
 
 # Use normal equation method to get beta
 beta = getNormalBeta(Xdata,ydata)
@@ -150,15 +149,16 @@ predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,3,1,1],[2,3,2,2],
                       [2,4,1,1],[2,4,2,2]]
 
-print("Now predicting likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
+# Start outputting results
+print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
 
-print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
+print("\nResults of Sample MtF Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataMtFVals)):
     predictData = fitPredictionData(predictDataMtFVals[i])
     finalPrediction = getPrediction(predictData,beta)
     print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
 
-print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
+print("\nResults of Sample FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     predictData = fitPredictionData(predictDataFtMVals[i])
     finalPrediction = getPrediction(predictData,beta)
