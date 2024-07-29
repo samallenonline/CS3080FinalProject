@@ -60,17 +60,17 @@ regr.fit(X.values,y)
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
 
-# For MtF: Accurate that gynephilic participants were more likely
-# to report a change than otherwise; the predictions for both those
-# who have and have not undergone HRT and/or surgery
-predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       " Androphilic/Y/N", " Androphilic/N/Y",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "    Bisexual/Y/N", "    Bisexual/N/Y",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N",
-                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
+# Labels for all
+predictDataNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                    " Androphilic/Y/N", " Androphilic/N/Y",
+                    "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                    "  Gynephilic/Y/N", "  Gynephilic/N/Y",
+                    "    Bisexual/Y/Y", "    Bisexual/N/N",
+                    "    Bisexual/Y/N", "    Bisexual/N/Y",
+                    "Analloerotic/Y/Y", "Analloerotic/N/N",
+                    "Analloerotic/Y/N", "Analloerotic/N/Y"]
+
+# For MtF
 predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
                       [1,1,1,2],[1,1,2,1],
                       [1,2,1,1],[1,2,2,2],
@@ -79,17 +79,9 @@ predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
                       [1,3,1,2],[1,3,2,1],
                       [1,4,1,1],[1,4,2,2],
                       [1,4,1,2],[1,4,2,1]]
+predictionsMtF = [] # Save results to get means later
 
-# For FtM: Also accurate that androphilic participants were more likely
-# to report a change than otherwise 
-predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       " Androphilic/Y/N", " Androphilic/N/Y",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "    Bisexual/Y/N", "    Bisexual/N/Y",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N",
-                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
+# For FtM
 predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,1,1,2],[2,1,2,1],
                       [2,2,1,1],[2,2,2,2],
@@ -98,6 +90,7 @@ predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,3,1,2],[2,3,2,1],
                       [2,4,1,1],[2,4,2,2],
                       [2,4,1,2],[2,4,2,1]]
+predictionsFtM = [] # Save results to get means later
 
 # Start outputting results
 print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
@@ -105,12 +98,52 @@ print("Now performing linear regression to predict likeliness of self-reported c
 print("\nResults of Sample MtF Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataMtFVals)):
     finalPrediction = regr.predict([predictDataMtFVals[i]])
-    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+    predictionsMtF.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
 
 print("\nResults of Sample FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     finalPrediction = regr.predict([predictDataFtMVals[i]])
-    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+    predictionsFtM.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
+
+# Calculate and print all means
+meanLabels = [" Androphilic: ",
+              "  Gynephilic: ",
+              "    Bisexual: ",
+              "Analloerotic: "]
+meansMtF = [np.mean(predictionsMtF[i:i+4]) for i in range(0, len(predictionsMtF), 4)]
+meansFtM = [np.mean(predictionsFtM[i:i+4]) for i in range(0, len(predictionsFtM), 4)]
+
+print("\n Overall MtF Means:")
+for i in range(len(meansMtF)):
+    print(meanLabels[i], meansMtF[i])
+
+print("\n Overall FtM Means:")
+for i in range(len(meansFtM)):
+    print(meanLabels[i], meansFtM[i])
+
+# Overall, androphilic FtM are most likely to report a change in
+# orientation, while gynephilic MtF are second most likely to report
+# a change in orientation.
+# These results are consistent with this section from the study's
+# results:
+#   "FtM that had initially been sexually oriented towards males 
+#   ( = androphilic), were significantly more likely to report on 
+#   a change in sexual orientation than gynephilic, analloerotic or 
+#   bisexual FtM (p  =  0.012)"
+
+# However, our results are dubious when it comes to completely matching
+# the below section from the study's results:
+#   "Similarly, gynephilic MtF reported a change in sexual orientation 
+#   more frequently than androphilic, analloerotic or bisexual MtF trans-
+#   sexual persons (p  =  0.05)."
+# In our results, gynephilic MtF on average are the second most likely to
+# report a change, the first being androphilic MtF. However, our model is
+# simplified in comparison to the study; we have not incorportated all of
+# the data that the study used into our calculations, thus those missing
+# data on other factors that could potentially influence a person's 
+# orientation may account for this particular inconsistency.
 
 ##############################################################################################################################
 # CORRELATION AND VISUALIZATIONS SECTION #####################################################################################

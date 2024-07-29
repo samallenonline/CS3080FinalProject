@@ -134,15 +134,17 @@ beta = getNormalBeta(Xdata,ydata)
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
 
-# For MtF: Accurate in matching the results from main_library.py
-predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       " Androphilic/Y/N", " Androphilic/N/Y",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "    Bisexual/Y/N", "    Bisexual/N/Y",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N",
-                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
+# Labels for all
+predictDataNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                    " Androphilic/Y/N", " Androphilic/N/Y",
+                    "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                    "  Gynephilic/Y/N", "  Gynephilic/N/Y",
+                    "    Bisexual/Y/Y", "    Bisexual/N/N",
+                    "    Bisexual/Y/N", "    Bisexual/N/Y",
+                    "Analloerotic/Y/Y", "Analloerotic/N/N",
+                    "Analloerotic/Y/N", "Analloerotic/N/Y"]
+
+# For MtF: Accurate in very closely matching the results from main_library.py
 predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
                       [1,1,1,2],[1,1,2,1],
                       [1,2,1,1],[1,2,2,2],
@@ -151,16 +153,9 @@ predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
                       [1,3,1,2],[1,3,2,1],
                       [1,4,1,1],[1,4,2,2],
                       [1,4,1,2],[1,4,2,1]]
+predictionsMtF = [] # Save results to get means later
 
-# For FtM: Accurate in matching the results from main_library.py
-predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       " Androphilic/Y/N", " Androphilic/N/Y",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "    Bisexual/Y/N", "    Bisexual/N/Y",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N",
-                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
+# For FtM: Accurate in very closely matching the results from main_library.py
 predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,1,1,2],[2,1,2,1],
                       [2,2,1,1],[2,2,2,2],
@@ -169,6 +164,7 @@ predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
                       [2,3,1,2],[2,3,2,1],
                       [2,4,1,1],[2,4,2,2],
                       [2,4,1,2],[2,4,2,1]]
+predictionsFtM = [] # Save results to get means later
 
 # Start outputting results
 print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
@@ -177,13 +173,31 @@ print("\nResults of Sample MtF Predictions (Initial Sexuality/Hormones/Surgery):
 for i in range(len(predictDataMtFVals)):
     predictData = fitPredictionData(predictDataMtFVals[i])
     finalPrediction = getPrediction(predictData,beta)
-    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+    predictionsMtF.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
 
 print("\nResults of Sample FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     predictData = fitPredictionData(predictDataFtMVals[i])
     finalPrediction = getPrediction(predictData,beta)
-    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+    predictionsFtM.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
+
+# Calculate and print all means
+meanLabels = [" Androphilic: ",
+              "  Gynephilic: ",
+              "    Bisexual: ",
+              "Analloerotic: "]
+meansMtF = [np.mean(predictionsMtF[i:i+4]) for i in range(0, len(predictionsMtF), 4)]
+meansFtM = [np.mean(predictionsFtM[i:i+4]) for i in range(0, len(predictionsFtM), 4)]
+
+print("\n Overall MtF Means:")
+for i in range(len(meansMtF)):
+    print(meanLabels[i], meansMtF[i])
+
+print("\n Overall FtM Means:")
+for i in range(len(meansFtM)):
+    print(meanLabels[i], meansFtM[i])
 
 # Separator for output
 print("\n****************************************************************************************************************************\n")
