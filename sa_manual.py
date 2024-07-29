@@ -3,7 +3,8 @@
 
 # Import libraries 
 import pandas as pd # For CSV handling
-import math # For math calculations - specifically to calculate error function
+import math # For correlation calculations - specifically to calculate error function
+import numpy as np # For z-test simple math calculations 
 
 # MANUAL FUNCTIONS START HERE! 
 # Load in data using pandas function - get rid of quotes in column names 
@@ -14,7 +15,7 @@ df.columns = df.columns.str.strip().str.replace("'", "")
 print("\nColumn names for dataset:\n\n", df.columns)
 print("\n****************************************************************************************************************************\n")
 
-# Functions for simple math calculations 
+# Functions for math calculations 
 def calculateMean(nums):
     return sum(nums) / len(nums)
     
@@ -84,7 +85,7 @@ print("\n***********************************************************************
 print("Results of proportion calculations and z-test: \n")
 
 # Prepare data for z-test 
-# I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
+# We will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
 ztestData = df[df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
 
@@ -98,18 +99,19 @@ FTMProp = FTMData.mean()
 print(f"MTF Proportion: {MTFProp:.4f}") # 0.3382
 print(f"FTM Proportion: {FTMProp:.4f}") # 0.2222
 
-# Count the number of successes and trials for each group
-count = [sum(MTFData == 1), sum(FTMData == 1)]  # Number of successes
-nobs = [len(MTFData), len(FTMData)]  # Number of observations
+# Count the number of successes and trials for each group and convert to numpy arrays
+count = np.array([sum(MTFData == 1), sum(FTMData == 1)])  # Number of successes
+nobs = np.array([len(MTFData), len(FTMData)]) # Number of observations
 
 # MANUAL Z-TEST
-pCombined = (count[0] + count[1]) / (nobs[0] + nobs[1])
-stdError = ((pCombined * (1 - pCombined) * (1 / nobs[0] + 1 / nobs[1])) ** 0.5)
+# Calculate combined proportion
+pPooled = np.sum(count) * 1. / np.sum(nobs)  
+nobsFact = np.sum(1. / nobs)
+var = pPooled * (1 - pPooled) * nobsFact
 
-# Calculate z-statistic 
-zStatistic = (MTFProp - FTMProp) / stdError
-# Calculate p-value 
-pValue = 2 * (1 - (0.5 * (1 + math.erf(zStatistic / (2 ** 0.5)))))
+stdDev = np.sqrt(var)  # Calculate standard deviation
+zStatistic = (MTFProp - FTMProp) / stdDev # Calculate z-statistic 
+pValue = 2 * (1 - 0.5 * (1 + math.erf(abs(zStatistic) / math.sqrt(2))))  # Calculate two-sided p-value
 
 # Print results of z-test
 print(f"Z-Statistic:    {zStatistic:.4f}")  # 1.3423
