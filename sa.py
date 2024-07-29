@@ -2,8 +2,6 @@
 # Gender transitioning and changes in self-reported sexual orientation
 # Sam Allen and Loe Malabanan
 
-# using this tutorial to help me out --> https://www.w3schools.com/python/python_ml_multiple_regression.asp
-
 # import libraries 
 import pandas as pd 
 import numpy as np 
