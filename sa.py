@@ -14,7 +14,10 @@ from sklearn import linear_model
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
-print("\n* All libraries have been successfull imported")
+# For saving files/directory work
+import os
+
+print("\n* All libraries have been successfully imported")
 
 # load in data
 # LOE: data_simplified_preclean.csv is data_simplified but
@@ -43,23 +46,6 @@ X = data[['sex (1=MtF; 2 =FtM)',
 'interval_horm_surg (interval from initiation of hormone therapy to sex reassignement surgery)']]
 '''
 
-''' # LOE: Notes to Self
-# > Ignore NAs
-#   age_of_onset -> can maybe ignore NAs because they will probably throw off predictions? or just 0 fill
-
-# > Easier to start with
-#   sex (1=MtF; 2 =FtM)
-#   hormontherapy (1 =yes; 2 =no)
-#   sex reassignement surgery (1= yes; 2 = no)
-
-# > Intermediate complexity (probably good to add due to original study results; not yet sure how to handle)
-#   initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)
-
-# > Should probably ignore due to high-seeming complexity
-#   hormonetype
-#   direction_change
-'''
-
 X = data[['sex (1=MtF; 2 =FtM)',
           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)',
           'hormontherapy (1 =yes; 2 =no)',
@@ -78,29 +64,48 @@ y = y.fillna(0)         # Get y
 data = data.fillna(0)   # Get anything left over
 #print(data) # Test print
 
-# LOE: Ignore NAs completely via dropping
-# Also works in replacing/dropping but vastly reduces number of tuples;
-# drops from 115 to 15 rows
-'''
-data = data.replace('NA',0)
-#data = data.fillna(0)
-data = data.dropna()
-'''
-
 # Post-cleaning message
 print("* NA values have been successfully handled")
 print("\n****************************************************************************************************************************\n")
 
 # Perform regression 
-print("Results of linear regression:")
 regr = linear_model.LinearRegression()
-regr.fit(X,y)
+regr.fit(X.values,y)
 
-# LOE: Predict using args
-# 'sex (1=MtF; 2 =FtM)', 'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
+# Arbitrary test individuals (FTM/BI/HRT/SRG)
+# Sample prediction data + fitting
+# 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
+# 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
-predictIfChange = regr.predict([[2,3,1,1]]) # Arbitrary for now
-print(predictIfChange)
+predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
+                      [1,2,1,1],[1,2,2,2],
+                      [1,3,1,1],[1,3,2,2],
+                      [1,4,1,1],[1,4,2,2]]
+
+predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
+                      [2,2,1,1],[2,2,2,2],
+                      [2,3,1,1],[2,3,2,2],
+                      [2,4,1,1],[2,4,2,2]]
+
+print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
+
+print("\nResults of MtF Predictions (Initial Sexuality/Hormones/Surgery):")
+for i in range(len(predictDataMtFVals)):
+    finalPrediction = regr.predict([predictDataMtFVals[i]])
+    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+
+print("\nResults of FtM Predictions (Initial Sexuality/Hormones/Surgery):")
+for i in range(len(predictDataFtMVals)):
+    finalPrediction = regr.predict([predictDataFtMVals[i]])
+    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
 
 # SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
@@ -123,7 +128,15 @@ print("\n***********************************************************************
 print(f"Results of correlation calculations (color-coded correlation matrix has also been exported as an HTML file):\n{correlationMatrix}")
 
 # Export dataframe as an HTML file so it can be viewed in web browser
-htmlFilePath = "/workspaces/CS3080FinalProject/correlationMatrix.html"
+# LOE: I've changed this to save in CWD (where sa.py is run from)
+
+# Get current working directory
+dir_cwd = os.getcwd()
+
+# Append file name to CWD path and save for use
+htmlFilePath = dir_cwd + "\\correlationMatrix.html"
+
+# Write to file
 with open(htmlFilePath, "w") as f:
     f.write(styledCorrMatrix.to_html())
 
