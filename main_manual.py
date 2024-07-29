@@ -1,7 +1,9 @@
 # CS3080 - Final Project
-# MANUAL FUNCTIONS FOR CORRELATION CALCULATIONS AND Z-TEST FOR PROPORTIONS 
+# Gender transitioning and changes in self-reported sexual orientation
+# Manual Functions for Correlation Calculations and Z-Test for Proportions 
+# Sam Allen and Loe Malabanan
 
-# Import libraries 
+# Import allowed libraries 
 import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
 import numpy as np # For more math in regression section
@@ -36,11 +38,12 @@ def fityData(iny):
     return y
 
 def fitPredictionData(inData):
+    # Add a 1 as the bias to remove conflict when using getPrediction()
     inData = np.insert(inData, 0, 1, axis=0)
     return inData
 
 def getNormalBeta(npX,npy):
-    # Use normal equation beta = [(X^T X)^(-1)] X^T y
+    # Use normal equation: beta = [(X^T X)^(-1)] X^T y
     beta = np.dot((np.linalg.inv(np.dot(npX.T,npX))), np.dot(npX.T,npy))
     return beta
 
@@ -95,8 +98,7 @@ def calculateCorrelations(dataFrame):
 # MAIN PROGRAM SECTION #######################################################################################################
 ##############################################################################################################################
 
-# MANUAL FUNCTIONS START HERE! 
-# Load in data using pandas function - get rid of quotes in column names 
+# Load in data using pandas function and get rid of quotes in column names 
 df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
 df.columns = df.columns.str.strip().str.replace("'", "")
 
@@ -131,23 +133,38 @@ beta = getNormalBeta(Xdata,ydata)
 # 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
-predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
-predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
-                      [1,2,1,1],[1,2,2,2],
-                      [1,3,1,1],[1,3,2,2],
-                      [1,4,1,1],[1,4,2,2]]
 
-predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+# Labels for all
+predictDataNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                    " Androphilic/Y/N", " Androphilic/N/Y",
+                    "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                    "  Gynephilic/Y/N", "  Gynephilic/N/Y",
+                    "    Bisexual/Y/Y", "    Bisexual/N/N",
+                    "    Bisexual/Y/N", "    Bisexual/N/Y",
+                    "Analloerotic/Y/Y", "Analloerotic/N/N",
+                    "Analloerotic/Y/N", "Analloerotic/N/Y"]
+
+# For MtF: Accurate in very closely matching the results from main_library.py
+predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
+                      [1,1,1,2],[1,1,2,1],
+                      [1,2,1,1],[1,2,2,2],
+                      [1,2,1,2],[1,2,2,1],
+                      [1,3,1,1],[1,3,2,2],
+                      [1,3,1,2],[1,3,2,1],
+                      [1,4,1,1],[1,4,2,2],
+                      [1,4,1,2],[1,4,2,1]]
+predictionsMtF = [] # Save results to get means later
+
+# For FtM: Accurate in very closely matching the results from main_library.py
 predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
+                      [2,1,1,2],[2,1,2,1],
                       [2,2,1,1],[2,2,2,2],
+                      [2,2,1,2],[2,2,2,1],
                       [2,3,1,1],[2,3,2,2],
-                      [2,4,1,1],[2,4,2,2]]
+                      [2,3,1,2],[2,3,2,1],
+                      [2,4,1,1],[2,4,2,2],
+                      [2,4,1,2],[2,4,2,1]]
+predictionsFtM = [] # Save results to get means later
 
 # Start outputting results
 print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
@@ -156,15 +173,33 @@ print("\nResults of Sample MtF Predictions (Initial Sexuality/Hormones/Surgery):
 for i in range(len(predictDataMtFVals)):
     predictData = fitPredictionData(predictDataMtFVals[i])
     finalPrediction = getPrediction(predictData,beta)
-    print(str(predictDataMtFNames[i]) + ": " + str(finalPrediction))
+    predictionsMtF.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
 
 print("\nResults of Sample FtM Predictions (Initial Sexuality/Hormones/Surgery):")
 for i in range(len(predictDataFtMVals)):
     predictData = fitPredictionData(predictDataFtMVals[i])
     finalPrediction = getPrediction(predictData,beta)
-    print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
+    predictionsFtM.append(finalPrediction)
+    print(str(predictDataNames[i]) + ": " + str(finalPrediction))
 
-# Separator
+# Calculate and print all means
+meanLabels = [" Androphilic: ",
+              "  Gynephilic: ",
+              "    Bisexual: ",
+              "Analloerotic: "]
+meansMtF = [np.mean(predictionsMtF[i:i+4]) for i in range(0, len(predictionsMtF), 4)]
+meansFtM = [np.mean(predictionsFtM[i:i+4]) for i in range(0, len(predictionsFtM), 4)]
+
+print("\n Overall MtF Means:")
+for i in range(len(meansMtF)):
+    print(meanLabels[i], meansMtF[i])
+
+print("\n Overall FtM Means:")
+for i in range(len(meansFtM)):
+    print(meanLabels[i], meansFtM[i])
+
+# Separator for output
 print("\n****************************************************************************************************************************\n")
 
 ##############################################################################################################################
@@ -195,7 +230,7 @@ print("Results of correlation calculations: \n")
 for (col1, col2), corr in correlations.items():
     print(f"Correlation between {col1} and {col2}: {corr:.4f}")
 
-#^^Results of the manual correlation calculations are identical to the values returned using the corr() function
+# The above results of the manual correlation calculations are identical to the values returned using the corr() function
 # in the pandas library.
     
 ##############################################################################################################################
@@ -207,7 +242,8 @@ print("\n***********************************************************************
 print("Results of proportion calculations and z-test: \n")
 
 # Prepare data for z-test 
-# We will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
+# NA values (currently 0) will be removed here since they are not applicable
+# Values will also be altered so that 0 = no and 1 = yes
 ztestData = df[df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
 
@@ -239,7 +275,7 @@ pValue = 2 * (1 - 0.5 * (1 + math.erf(abs(zStatistic) / math.sqrt(2))))  # Calcu
 print(f"Z-Statistic:    {zStatistic:.4f}")  # 1.3423
 print(f"P-Value:        {pValue:.4f}")      # 0.1795
 
-# ^^Results of the manual z-test are close but not identical to the values returned using the proportions_ztest() 
+# The above results of the manual z-test are close but not identical to the values returned using the proportions_ztest() 
 # function in the statsmodels library. The results returned by this function are as follows:
-# Z-Statistic: 1.3277
-# P-Value: 0.1843
+#     Z-Statistic: 1.3277
+#     P-Value: 0.1843
