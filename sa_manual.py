@@ -1,8 +1,9 @@
 # CS3080 - Final Project
-# MANUAL FUNCTIONS FOR CORRELATION CALCULATIONS AND Z-TEST FOR PROPORTIONS 
+# Gender transitioning and changes in self-reported sexual orientation
+# Manual Functions for Correlation Calculations and Z-Test for Proportions 
 # Sam Allen and Loe Malabanan
 
-# Import libraries 
+# Import allowed libraries 
 import pandas as pd # For CSV handling
 import math # For math calculations - specifically to calculate error function
 import numpy as np # For more math in regression section
@@ -37,11 +38,12 @@ def fityData(iny):
     return y
 
 def fitPredictionData(inData):
+    # Add a 1 as the bias to remove conflict when using getPrediction()
     inData = np.insert(inData, 0, 1, axis=0)
     return inData
 
 def getNormalBeta(npX,npy):
-    # Use normal equation beta = [(X^T X)^(-1)] X^T y
+    # Use normal equation: beta = [(X^T X)^(-1)] X^T y
     beta = np.dot((np.linalg.inv(np.dot(npX.T,npX))), np.dot(npX.T,npy))
     return beta
 
@@ -95,9 +97,8 @@ def calculateCorrelations(dataFrame):
 ##############################################################################################################################
 # MAIN PROGRAM SECTION #######################################################################################################
 ##############################################################################################################################
-# MANUAL FUNCTIONS START HERE! 
 
-# Load in data using pandas function - get rid of quotes in column names 
+# Load in data using pandas function and get rid of quotes in column names 
 df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
 df.columns = df.columns.str.strip().str.replace("'", "")
 
@@ -241,7 +242,7 @@ pValue = 2 * (1 - 0.5 * (1 + math.erf(abs(zStatistic) / math.sqrt(2))))  # Calcu
 print(f"Z-Statistic:    {zStatistic:.4f}")  # 1.3423
 print(f"P-Value:        {pValue:.4f}")      # 0.1795
 
-# ^^Results of the manual z-test are close but not identical to the values returned using the proportions_ztest() 
+# The above results of the manual z-test are close but not identical to the values returned using the proportions_ztest() 
 # function in the statsmodels library. The results returned by this function are as follows:
-# Z-Statistic: 1.3277
-# P-Value: 0.1843
+#     Z-Statistic: 1.3277
+#     P-Value: 0.1843
