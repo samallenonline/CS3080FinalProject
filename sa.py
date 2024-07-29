@@ -1,5 +1,6 @@
 # CS3080 - Final Project 
 # Gender transitioning and changes in self-reported sexual orientation
+# Library functions version
 # Sam Allen and Loe Malabanan
 
 # import libraries 
