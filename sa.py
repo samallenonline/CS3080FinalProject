@@ -5,8 +5,6 @@
 # import libraries 
 import pandas as pd 
 import numpy as np 
-# import matplotlib.pyplot as plt # Optional to use - for visualizations
-# import seaborn as sns # Optional to use - for visualizations
 from statsmodels.stats.proportion import proportions_ztest # To perform z-test
 
 # from scikit-learn 
@@ -25,8 +23,6 @@ print("* All libraries have been successfully imported")
 ##############################################################################################################################
 
 # Load in data
-# LOE: data_simplified_preclean.csv is the same as sexual_orientation_auer_anonymized.csv,
-#      but without the rows of empty cells
 data = pd.read_csv("data_simplified_preclean.csv")
 
 # Independent variable data
@@ -44,7 +40,7 @@ y = data['changesexorient (there has been a change in self-reported sexual orien
 # vastly reduces the number of rows from 115 to 15
 X = X.fillna(0)         # Get X
 y = y.fillna(0)         # Get y
-data = data.fillna(0)   # Get anything left over
+data = data.fillna(0)   # Get everything else
 
 # Post-cleaning message
 print("* Data and NA values have been successfully handled")
@@ -58,8 +54,8 @@ print("\n***********************************************************************
 regr = linear_model.LinearRegression()
 regr.fit(X.values,y)
 
-# Arbitrary test individuals (FTM/BI/HRT/SRG)
-# Sample prediction data + fitting
+# Sample test individual data (FTM/BI/HRT/SRG)
+# NOT exhaustive
 # 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
@@ -98,7 +94,6 @@ for i in range(len(predictDataFtMVals)):
 # CORRELATION AND VISUALIZATIONS SECTION #####################################################################################
 ##############################################################################################################################
 
-# SAM: Correlation calculations and visualizations 
 # Selecting columns to be used for correlations matrix 
 columnsOfInterest = [
     'sex (1=MtF; 2 =FtM)',
@@ -109,7 +104,6 @@ columnsOfInterest = [
 ]
 
 # Utilizing corr() function from pandas library to calculate correlations 
-# Documentation for corr() function -> https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.corr.html
 correlationsData = data[columnsOfInterest]
 correlationMatrix = correlationsData.corr()
 styledCorrMatrix = correlationMatrix.style.background_gradient(cmap='coolwarm') # Produces a matrix of correlations with color-coding to appear like a heatmap
@@ -131,7 +125,7 @@ with open(htmlFilePath, "w") as f:
     f.write(styledCorrMatrix.to_html())
 
 # CORRELATION RESULTS AND INTERPRETATIONS
-# changesexorient and sex: 	                        0.158631
+# changesexorient and sex: 	                      0.158631
 # changesexorient and initial_sex_orientation:      0.123523
 # changesexorient and hormontherapy:                0.074691
 # cchangesexorient and sex_reassignment_surgery:    0.155776
@@ -150,11 +144,11 @@ with open(htmlFilePath, "w") as f:
 # Z-TEST SECTION #############################################################################################################
 ##############################################################################################################################
 
-# SAM: Z-test (compare change in self-reported sexual orientation between FTM and MTF populations) 
-# Documentation for proportions_ztest() function --> https://www.statsmodels.org/stable/generated/statsmodels.stats.proportion.proportions_ztest.html
+# Z-test will compare change in self-reported sexual orientation between FTM and MTF populations
 # Proportion: percentage of the population group that reports a change in self-reported sexual orientation
 
-# I will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
+# NA values (currently 0) will be removed here since they are not applicable
+# Values will also be altered so that 0 = no and 1 = yes
 # Make a copy of the relevant data slice to avoid SettingWithCopyWarning
 ztestData = data[data['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0].copy()
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
@@ -171,7 +165,7 @@ print("Percent of study participants who reported a change in sexual orientation
 print(f"MtF Proportion: {MTFProp:.4f}") # 0.338 - meaning 33.8% of MtF study participants reported a change in sexual orientation
 print(f"FtM Proportion: {FTMProp:.4f}") # 0.222 - meaning 22.2% of FtM study participants reported a change in sexual orientation
 
-# ^^ These results are mostly consistent with the conclusions of the study:
+# The above results are mostly consistent with the conclusions of the study:
 # "About one third of MtF (32.9 %, N  =  23) reported a change in sexual orientation during 
 # their life, in contrast to 22.2 % (N  =  10) in the FtM group (n.s.)."
 
