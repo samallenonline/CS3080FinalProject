@@ -133,23 +133,42 @@ beta = getNormalBeta(Xdata,ydata)
 # 'sex (1=MtF; 2 =FtM)',           'initial_sex_orientation (1= androphilic; 2 =gynephilic; 3 = bisexual, 4 = analloerotic)', 
 # 'hormontherapy (1 =yes; 2 =no)', 'sex reassignement surgery (1= yes; 2 = no)'
 # Result should be 1 (yes) or 2 (no) or in that range
-predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
-                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
-                       "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
-predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
-                      [1,2,1,1],[1,2,2,2],
-                      [1,3,1,1],[1,3,2,2],
-                      [1,4,1,1],[1,4,2,2]]
 
-predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+# For MtF: Accurate in matching the results from main_library.py
+predictDataMtFNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       " Androphilic/Y/N", " Androphilic/N/Y",
                        "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
                        "    Bisexual/Y/Y", "    Bisexual/N/N",
-                       "Analloerotic/Y/Y", "Analloerotic/N/N"]
+                       "    Bisexual/Y/N", "    Bisexual/N/Y",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N",
+                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
+predictDataMtFVals = [[1,1,1,1],[1,1,2,2],
+                      [1,1,1,2],[1,1,2,1],
+                      [1,2,1,1],[1,2,2,2],
+                      [1,2,1,2],[1,2,2,1],
+                      [1,3,1,1],[1,3,2,2],
+                      [1,3,1,2],[1,3,2,1],
+                      [1,4,1,1],[1,4,2,2],
+                      [1,4,1,2],[1,4,2,1]]
+
+# For FtM: Accurate in matching the results from main_library.py
+predictDataFtMNames = [" Androphilic/Y/Y", " Androphilic/N/N",
+                       " Androphilic/Y/N", " Androphilic/N/Y",
+                       "  Gynephilic/Y/Y", "  Gynephilic/N/N",
+                       "  Gynephilic/Y/N", "  Gynephilic/N/Y",
+                       "    Bisexual/Y/Y", "    Bisexual/N/N",
+                       "    Bisexual/Y/N", "    Bisexual/N/Y",
+                       "Analloerotic/Y/Y", "Analloerotic/N/N",
+                       "Analloerotic/Y/N", "Analloerotic/N/Y"]
 predictDataFtMVals = [[2,1,1,1],[2,1,2,2],
+                      [2,1,1,2],[2,1,2,1],
                       [2,2,1,1],[2,2,2,2],
+                      [2,2,1,2],[2,2,2,1],
                       [2,3,1,1],[2,3,2,2],
-                      [2,4,1,1],[2,4,2,2]]
+                      [2,3,1,2],[2,3,2,1],
+                      [2,4,1,1],[2,4,2,2],
+                      [2,4,1,2],[2,4,2,1]]
 
 # Start outputting results
 print("Now performing linear regression to predict likeliness of self-reported change in sexuality...\nNOTE: Nearer to 1 = YES and 2 = NO.")
