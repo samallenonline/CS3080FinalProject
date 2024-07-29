@@ -1,5 +1,6 @@
 # CS3080 - Final Project
 # MANUAL FUNCTIONS FOR CORRELATION CALCULATIONS AND Z-TEST FOR PROPORTIONS 
+# Sam Allen and Loe Malabanan
 
 # Import libraries 
 import pandas as pd # For CSV handling
@@ -94,8 +95,8 @@ def calculateCorrelations(dataFrame):
 ##############################################################################################################################
 # MAIN PROGRAM SECTION #######################################################################################################
 ##############################################################################################################################
-
 # MANUAL FUNCTIONS START HERE! 
+
 # Load in data using pandas function - get rid of quotes in column names 
 df = pd.read_csv("data_simplified_preclean.csv", quotechar='"', skipinitialspace=True)
 df.columns = df.columns.str.strip().str.replace("'", "")
@@ -164,7 +165,7 @@ for i in range(len(predictDataFtMVals)):
     finalPrediction = getPrediction(predictData,beta)
     print(str(predictDataFtMNames[i]) + ": " + str(finalPrediction))
 
-# Separator
+# Separator for output
 print("\n****************************************************************************************************************************\n")
 
 ##############################################################################################################################
@@ -195,7 +196,7 @@ print("Results of correlation calculations: \n")
 for (col1, col2), corr in correlations.items():
     print(f"Correlation between {col1} and {col2}: {corr:.4f}")
 
-#^^Results of the manual correlation calculations are identical to the values returned using the corr() function
+# The above results of the manual correlation calculations are identical to the values returned using the corr() function
 # in the pandas library.
     
 ##############################################################################################################################
@@ -207,7 +208,8 @@ print("\n***********************************************************************
 print("Results of proportion calculations and z-test: \n")
 
 # Prepare data for z-test 
-# We will be removing NA values (currently 0) here since they are not applicable, and altering the values so that 0 = no and 1 = yes
+# NA values (currently 0) will be removed here since they are not applicable
+# Values will also be altered so that 0 = no and 1 = yes
 ztestData = df[df['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] != 0]
 ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'] = ztestData['changesexorient (there has been a change in self-reported sexual orientation: 1= yes; 2 = no)'].replace({2: 0})
 
